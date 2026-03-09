@@ -7,3 +7,6 @@ description = "Minimal Solana RPC crate, hand-rolled using only reqwest and serd
 repository = "https://github.com/SpriteDay/solana-rpc-lite"
 
 [dependencies]
+reqwest = "0.13.2"
+serde = { version = "1.0.228", features = ["derive"] }
+tokio = "1.50.0"
