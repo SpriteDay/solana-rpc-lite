@@ -9,4 +9,7 @@ repository = "https://github.com/SpriteDay/solana-rpc-lite"
 [dependencies]
 reqwest = "0.13.2"
 serde = { version = "1.0.228", features = ["derive"] }
-tokio = "1.50.0"
+
+[dev-dependencies]
+clap = { version = "4.5.60", features = ["derive"] }
+tokio = { version = "1.50.0", features = ["macros", "rt-multi-thread"] }
