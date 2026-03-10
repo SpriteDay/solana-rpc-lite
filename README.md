@@ -32,6 +32,15 @@ For now impletented these methods:
 - [getHealth](https://solana.com/docs/rpc/http/gethealth)
 
 
+## Tests
+Integration tests marked with `#[ignore]` macro, because they require working Solana RPC URL specified as `SOLANA_RPC_URL` env variable:
+```sh
+SOLANA_RPC_URL="http://127.0.0.1:8899" cargo test -- --ignored
+```
+
+Crate also has unit tests for core functions
+
+
 ## Examples
 To run one of the examples in `/examples` folder, use this command template:
 ```sh
