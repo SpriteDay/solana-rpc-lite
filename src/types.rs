@@ -2,6 +2,8 @@ use thiserror::Error;
 
 use serde::{Deserialize, Serialize};
 
+/// JSON RPC v2.0 envelope
+/// Specs: https://www.jsonrpc.org/specification
 #[derive(Serialize)]
 pub(crate) struct RpcBody {
     pub(crate) id: u64,
@@ -10,6 +12,8 @@ pub(crate) struct RpcBody {
     pub(crate) params: serde_json::Value,
 }
 
+/// We expect JSON RPC 2.0 envelope in response
+/// Specs: https://www.jsonrpc.org/specification
 #[derive(Deserialize, Debug)]
 #[serde(untagged)]
 pub(crate) enum RpcResponse<T> {
@@ -27,6 +31,13 @@ pub(crate) enum RpcResponse<T> {
     },
 }
 
+/// Possible errors according to specs (https://www.jsonrpc.org/specification):
+/// - `-32700` - `Parse error` - Invalid JSON was received by the server. An error occurred on the server while parsing the JSON text.
+/// - `-32600` - `Invalid Request` - The JSON sent is not a valid Request object.
+/// - `-32601` - `Method not found` - The method does not exist / is not available.
+/// - `-32602` - Invalid params Invalid method parameter(s).
+/// - `-32603` - `Internal error` - Internal JSON-RPC error.
+/// - `-32000` to `-32099` - `Server error` - Reserved for implementation-defined server-errors.
 #[derive(Deserialize, Debug)]
 pub(crate) struct RpcError {
     code: i64,
@@ -74,6 +85,14 @@ impl<T> RpcResponse<T> {
     }
 }
 
+/// Errors have these variants:
+/// - `Http` - returned when request didn't get success status
+/// - `Rpc` - RPC request received, but with error from server
+/// - `IdMismatch` - if for some reason `id` field of response was not equal to `id` value passed via request
+/// - `InvalidVersion` - a bit exotic one, if for some reason returned `jsonrpc` field not the same version of `jsonrpc` requested, this error gets returned.
+/// We use [JSON RPC v2.0](https://www.jsonrpc.org/specification) which is a massively used standard, but still nice to double check!
+/// - `Reqwest` - propagated [reqwest](https://crates.io/crates/reqwest) error
+/// - `Json` - propagated [serde_json](https://crates.io/crates/serde_json) error
 #[derive(Debug, Error)]
 pub enum RpcClientError {
     #[error("HTTP error, status: {status}, body: {body}")]

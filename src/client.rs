@@ -8,6 +8,12 @@ pub struct RpcClient {
 }
 
 impl RpcClient {
+    /// Requires RPC URL as argument:
+    /// ```
+    /// use solana_rpc_lite::RpcClient;
+    ///
+    /// let client = RpcClient::new("http://127.0.0.1:8899");
+    /// ```
     pub fn new(rpc_url: &str) -> Self {
         Self {
             rpc_url: rpc_url.to_string(),
@@ -15,6 +21,8 @@ impl RpcClient {
         }
     }
 
+    /// Returns the current health of the node. A healthy node is one that is within `HEALTH_CHECK_SLOT_DISTANCE`` slots of the latest cluster confirmed slot.
+    /// Specs: https://solana.com/docs/rpc/http/gethealth
     pub async fn get_health(&self, id: u64) -> Result<String, RpcClientError> {
         let method = "getHealth";
         let body = RpcBody {

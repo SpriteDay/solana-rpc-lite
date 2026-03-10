@@ -19,7 +19,7 @@ Instantiate the RPC client with RPC URL, call method passing optional `id` (`u64
 ```
 
 ## Errors
-Errors are returned via `RpcClientError`, it has 5 variants:
+Errors are returned via `RpcClientError`, it has 6 variants:
 - `Http` - returned when request didn't get success status
 - `Rpc` - RPC request received, but with error from server
 - `IdMismatch` - if for some reason `id` field of response was not equal to `id` value passed via request
@@ -43,3 +43,6 @@ You can spin up local `surfpool` and use local url, for example:
 surfpool start
 cargo run --example get-health -- --url http://127.0.0.1:8899
 ```
+
+## Batch Requests
+I haven't implemented them yet, but might look into that in the future
