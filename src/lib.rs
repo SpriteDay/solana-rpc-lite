@@ -1,3 +1,9 @@
+mod client;
+mod types;
+
+pub use client::RpcClient;
+pub use types::RpcClientError;
+
 pub fn add(left: u64, right: u64) -> u64 {
     left + right
 }
