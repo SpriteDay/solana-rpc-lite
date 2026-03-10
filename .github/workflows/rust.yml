@@ -1,8 +1,5 @@
-name: test suite
+name: Test Suite
 on: [push, pull_request]
-
-env:
-  SOLANA_RPC_URL=${{ secrets.SOLANA_RPC_URL }}
 
 jobs:
   test:
@@ -11,4 +8,9 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@stable
-      - run: cargo test --all-features
+      - name: Default tests
+        run: cargo test --all-features
+      - name: Integration tests requiring live Solana RPC connection
+        run: cargo test --verbose -- --ignored
+        env:
+          SOLANA_RPC_URL: ${{ secrets.SOLANA_RPC_URL }}
