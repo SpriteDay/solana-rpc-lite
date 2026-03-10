@@ -38,7 +38,7 @@ pub(crate) enum RpcResponse<T> {
 /// - `-32602` - Invalid params Invalid method parameter(s).
 /// - `-32603` - `Internal error` - Internal JSON-RPC error.
 /// - `-32000` to `-32099` - `Server error` - Reserved for implementation-defined server-errors.
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub(crate) struct RpcError {
     code: i64,
     message: String,
@@ -171,7 +171,29 @@ mod tests {
         let validated = response.validate(id, expected_jsonrpc);
         assert!(matches!(
             validated,
-            Err(RpcClientError::InvalidVersion { expected, got }) if expected == expected_jsonrpc && got == returned_jsonrpc
+            Err(RpcClientError::InvalidVersion { expected, got })
+                if expected == expected_jsonrpc && got == returned_jsonrpc
         ));
+    }
+
+    #[test]
+    fn propagates_rpc_error() {
+        let id = 1_u64;
+        let jsonrpc = "2.0";
+        let rpc_error = RpcError {
+            code: -32600,
+            message: "Invalid Request".into(),
+            data: None,
+        };
+        let response = RpcResponse::<String>::Failure {
+            id: id,
+            jsonrpc: jsonrpc.into(),
+            error: rpc_error.clone(),
+        };
+        let validated = response.validate(id, jsonrpc);
+        assert!(
+            matches!(validated, Err(RpcClientError::Rpc { code, message, data }) 
+                if code == rpc_error.code && message == rpc_error.message && data == rpc_error.data)
+        )
     }
 }
