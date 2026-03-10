@@ -3,16 +3,16 @@ use thiserror::Error;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize)]
-pub struct RpcBody {
-    pub id: u64,
-    pub jsonrpc: &'static str,
-    pub method: &'static str,
-    pub params: serde_json::Value,
+pub(crate) struct RpcBody {
+    pub(crate) id: u64,
+    pub(crate) jsonrpc: &'static str,
+    pub(crate) method: &'static str,
+    pub(crate) params: serde_json::Value,
 }
 
 #[derive(Deserialize, Debug)]
 #[serde(untagged)]
-pub enum RpcResponse<T> {
+pub(crate) enum RpcResponse<T> {
     Success {
         id: u64,
         jsonrpc: String,
@@ -28,7 +28,7 @@ pub enum RpcResponse<T> {
 }
 
 #[derive(Deserialize, Debug)]
-pub struct RpcError {
+pub(crate) struct RpcError {
     code: i64,
     message: String,
     data: Option<serde_json::Value>,
@@ -36,7 +36,11 @@ pub struct RpcError {
 
 impl<T> RpcResponse<T> {
     /// Validates for matching Id of request and response, checks for JSON RPC version
-    pub fn validate(self, expected_id: u64, expected_jsonrpc: &str) -> Result<T, RpcClientError> {
+    pub(crate) fn validate(
+        self,
+        expected_id: u64,
+        expected_jsonrpc: &str,
+    ) -> Result<T, RpcClientError> {
         match self {
             Self::Success {
                 id,
