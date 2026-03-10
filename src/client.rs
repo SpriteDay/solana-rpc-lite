@@ -21,7 +21,9 @@ impl RpcClient {
         }
     }
 
-    /// Returns the current health of the node. A healthy node is one that is within `HEALTH_CHECK_SLOT_DISTANCE`` slots of the latest cluster confirmed slot.
+    /// Returns the current health of the node. A healthy node is one that is within
+    /// `HEALTH_CHECK_SLOT_DISTANCE` slots of the latest cluster confirmed slot.
+    ///
     /// Specs: https://solana.com/docs/rpc/http/gethealth
     pub async fn get_health(&self, id: u64) -> Result<String, RpcClientError> {
         let method = "getHealth";

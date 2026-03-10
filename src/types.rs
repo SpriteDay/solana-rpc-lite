@@ -117,3 +117,22 @@ pub enum RpcClientError {
     #[error(transparent)]
     Json(#[from] serde_json::Error),
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn validates_success_response() {
+        let id = 1_u64;
+        let jsonrpc = "2.0";
+        let result = "ok";
+        let response = RpcResponse::<String>::Success {
+            id,
+            jsonrpc: jsonrpc.to_string(),
+            result: result.to_string(),
+        };
+        let validated = response.validate(id, jsonrpc);
+        assert_eq!(validated.unwrap(), result);
+    }
+}
