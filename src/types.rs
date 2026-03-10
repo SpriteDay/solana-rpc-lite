@@ -135,4 +135,25 @@ mod tests {
         let validated = response.validate(id, jsonrpc);
         assert_eq!(validated.unwrap(), result);
     }
+
+    #[test]
+    fn returns_id_mismatch_on_wrong_id() {
+        let expected_id = 1_u64;
+        let returned_id = 2_u64;
+        let jsonrpc = "2.0";
+        let result = "ok";
+        let response = RpcResponse::<String>::Success {
+            id: returned_id,
+            jsonrpc: jsonrpc.to_string(),
+            result: result.to_string(),
+        };
+        let validated = response.validate(expected_id, jsonrpc);
+        assert!(matches!(
+            validated,
+            Err(RpcClientError::IdMismatch {
+                expected: 1,
+                got: 2
+            })
+        ));
+    }
 }
