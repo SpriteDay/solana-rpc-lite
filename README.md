@@ -1,7 +1,7 @@
 # Solana RPC Lite
 Minimal Solana RPC crate, hand-rolled using `reqwest` and `serde`. Done as practice/portfolio piece, but coming out quite nicely - it is thin and easy to reason about.
 
-Implements standard HTTP JSON-RPC client so it works against any Solana node URL, specs: https://solana.com/docs/rpc/http
+Implements standard HTTP JSON-RPC client so it works against any Solana node URL, specs of used methods: https://solana.com/docs/rpc/http
 
 ## Installation
 I probably will keep it as portfolio piece for now, so the installation is through git link for now, in your `Cargo.toml`:
@@ -15,7 +15,7 @@ Instantiate the RPC client with RPC URL, call method passing optional `id` (`u64
 ```rs
     let client = solana_rpc_lite::RpcClient::new(&rpc_url);
     let id = 1_u64;
-    let result = client.get_health(id).await?; // String "ok"
+    let result = client.get_health().await?; // String "ok"
 ```
 
 ## Errors

@@ -1,4 +1,7 @@
-use crate::types::{RpcBody, RpcClientError, RpcResponse};
+use crate::{
+    methods::{RpcMethod, get_health::GetHealth},
+    types::{RpcBody, RpcClientError, RpcResponse},
+};
 
 const JSON_RPC_V: &str = "2.0";
 
@@ -21,17 +24,13 @@ impl RpcClient {
         }
     }
 
-    /// Returns the current health of the node. A healthy node is one that is within
-    /// `HEALTH_CHECK_SLOT_DISTANCE` slots of the latest cluster confirmed slot.
-    ///
-    /// Specs: https://solana.com/docs/rpc/http/gethealth
-    pub async fn get_health(&self, id: u64) -> Result<String, RpcClientError> {
-        let method = "getHealth";
+    async fn call<T: RpcMethod>(&self, method: T) -> Result<T::Response, RpcClientError> {
+        let default_id = 1_u64;
         let body = RpcBody {
-            id,
+            id: default_id,
             jsonrpc: JSON_RPC_V,
-            method,
-            params: serde_json::Value::Null,
+            method: method.method_name(),
+            params: method.params(),
         };
         let response = self.client.post(&self.rpc_url).json(&body).send().await?;
 
@@ -44,10 +43,18 @@ impl RpcClient {
             });
         }
 
-        let parsed = response.json::<RpcResponse<String>>().await?;
+        let parsed = response.json::<RpcResponse<T::Response>>().await?;
 
-        let validated = parsed.validate(id, JSON_RPC_V)?;
+        let validated = parsed.validate(default_id, JSON_RPC_V)?;
 
         Ok(validated)
+    }
+
+    /// Returns the current health of the node. A healthy node is one that is within
+    /// `HEALTH_CHECK_SLOT_DISTANCE` slots of the latest cluster confirmed slot.
+    ///
+    /// Specs: https://solana.com/docs/rpc/http/gethealth
+    pub async fn get_health(&self) -> Result<String, RpcClientError> {
+        self.call(GetHealth).await
     }
 }
