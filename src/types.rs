@@ -156,4 +156,22 @@ mod tests {
             })
         ));
     }
+
+    #[test]
+    fn returns_invalid_version_on_wrong_jsonrpc() {
+        let id = 1_u64;
+        let expected_jsonrpc = "2.0";
+        let returned_jsonrpc = "3.0";
+        let result = "ok";
+        let response = RpcResponse::<String>::Success {
+            id: id,
+            jsonrpc: returned_jsonrpc.to_string(),
+            result: result.to_string(),
+        };
+        let validated = response.validate(id, expected_jsonrpc);
+        assert!(matches!(
+            validated,
+            Err(RpcClientError::InvalidVersion { expected, got }) if expected == expected_jsonrpc && got == returned_jsonrpc
+        ));
+    }
 }
