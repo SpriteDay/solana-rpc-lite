@@ -26,7 +26,9 @@ enum RpcResponse<T> {
         result: T,
     },
     Failure {
+        #[allow(dead_code)]
         id: u64,
+        #[allow(dead_code)]
         jsonrpc: String,
         error: RpcError,
     },
@@ -62,6 +64,7 @@ impl<T> RpcResponse<T> {
             } => Err(RpcClientError::Rpc {
                 code: error.code,
                 message: error.message,
+                data: error.data,
             }),
         }
     }
@@ -72,8 +75,12 @@ pub enum RpcClientError {
     #[error("HTTP error, status: {status}, body: {body}")]
     Http { status: u16, body: String },
 
-    #[error("RPC error, code: {code}, message: {message}")]
-    Rpc { code: i64, message: String },
+    #[error("RPC error, code: {code}, message: {message}, data: {data:?}")]
+    Rpc {
+        code: i64,
+        message: String,
+        data: Option<serde_json::Value>,
+    },
 
     #[error("Response Id mismatch: expected {expected}, got {got}")]
     IdMismatch { expected: u64, got: u64 },
