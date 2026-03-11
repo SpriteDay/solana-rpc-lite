@@ -1,7 +1,7 @@
 use crate::methods::RpcMethod;
 
 /// Specs: https://solana.com/docs/rpc/http/gethealth
-pub(crate) struct GetHealth;
+pub struct GetHealth;
 
 impl RpcMethod for GetHealth {
     type Response = String;

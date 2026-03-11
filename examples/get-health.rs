@@ -13,7 +13,6 @@ async fn main() -> Result<(), RpcClientError> {
 
     let client = solana_rpc_lite::RpcClient::new(&args.url);
 
-    let id = 1_u64;
     let result = client.get_health().await?;
 
     println!("{result:#?}");

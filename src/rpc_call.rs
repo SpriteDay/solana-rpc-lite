@@ -3,24 +3,21 @@ use crate::{
     methods::RpcMethod,
     types::{RpcBody, RpcResponse},
 };
-use std::future::{Ready, ready};
+use std::pin::Pin;
 
 const JSON_RPC_V: &str = "2.0";
 
-pub(crate) struct RpcCall<'a, T: RpcMethod> {
+pub struct RpcCall<'a, T: RpcMethod> {
+    pub(crate) id: u64,
     pub(crate) method: T,
     pub(crate) client: &'a reqwest::Client,
     pub(crate) rpc_url: &'a String,
 }
 
-impl<'a, T: RpcMethod> IntoFuture for RpcCall<'a, T> {
-    type Output = Result<T::Response, RpcClientError>;
-    type IntoFuture = Ready<Self::Output>;
-
-    fn into_future(self) -> Self::IntoFuture {
-        let default_id = 1_u64;
+impl<'a, T: RpcMethod> RpcCall<'a, T> {
+    async fn call(self) -> Result<T::Response, RpcClientError> {
         let body = RpcBody {
-            id: default_id,
+            id: self.id,
             jsonrpc: JSON_RPC_V,
             method: self.method.method_name(),
             params: self.method.params(),
@@ -30,16 +27,30 @@ impl<'a, T: RpcMethod> IntoFuture for RpcCall<'a, T> {
         if !response.status().is_success() {
             let status = response.status();
             let body = response.text().await.unwrap_or_default();
-            return ready(Err(RpcClientError::Http {
+            return Err(RpcClientError::Http {
                 status: status.into(),
                 body,
-            }));
+            });
         }
 
         let parsed = response.json::<RpcResponse<T::Response>>().await?;
 
-        let validated = parsed.validate(default_id, JSON_RPC_V)?;
+        let validated = parsed.validate(self.id, JSON_RPC_V)?;
 
-        ready(Ok(validated))
+        Ok(validated)
+    }
+
+    pub fn with_id(mut self, id: u64) -> Self {
+        self.id = id;
+        self
+    }
+}
+
+impl<'a, T: RpcMethod + 'a> IntoFuture for RpcCall<'a, T> {
+    type Output = Result<T::Response, RpcClientError>;
+    type IntoFuture = Pin<Box<dyn Future<Output = Self::Output> + 'a>>;
+
+    fn into_future(self) -> Self::IntoFuture {
+        Box::pin(self.call())
     }
 }
