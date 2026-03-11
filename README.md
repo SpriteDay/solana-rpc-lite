@@ -27,11 +27,13 @@ Errors are returned via `RpcClientError`, it has 6 variants:
 - `Reqwest` - propagated [reqwest](https://crates.io/crates/reqwest) error
 - `Json` - propagated [serde_json](https://crates.io/crates/serde_json) error
 
+
 ## Implemented Methods
 For now impletented these methods:
 - [getHealth](https://solana.com/docs/rpc/http/gethealth)
 - [getbalance](https://solana.com/docs/rpc/http/getbalance)
 - [getSlot](https://solana.com/docs/rpc/http/getslot)
+- [getTokenAccountBalance](https://solana.com/docs/rpc/http/gettokenaccountbalance)
 
 
 ## Tests
