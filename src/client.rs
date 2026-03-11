@@ -1,5 +1,6 @@
 use crate::{
     methods::{RpcMethod, get_health::GetHealth},
+    rpc_call::RpcCall,
     types::{RpcBody, RpcClientError, RpcResponse},
 };
 
@@ -54,7 +55,11 @@ impl RpcClient {
     /// `HEALTH_CHECK_SLOT_DISTANCE` slots of the latest cluster confirmed slot.
     ///
     /// Specs: https://solana.com/docs/rpc/http/gethealth
-    pub async fn get_health(&self) -> Result<String, RpcClientError> {
-        self.call(GetHealth).await
+    pub fn get_health(&self) -> RpcCall<GetHealth> {
+        RpcCall {
+            method: GetHealth,
+            client: &self.client,
+            rpc_url: &self.rpc_url,
+        }
     }
 }
