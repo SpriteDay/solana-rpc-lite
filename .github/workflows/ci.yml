@@ -14,3 +14,4 @@ jobs:
         run: cargo test --verbose -- --ignored
         env:
           SOLANA_RPC_URL: ${{ secrets.SOLANA_RPC_URL }}
+          TOKEN_ACCOUNT_ADDRESS: JmHSrPX6rj1Df3pwUrQv4DW6PY2Z923XnZieAQiYWY8

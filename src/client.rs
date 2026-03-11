@@ -3,6 +3,7 @@ use crate::{
         get_balance::{GetBalance, GetBalanceConfig},
         get_health::GetHealth,
         get_slot::{GetSlot, GetSlotConfig},
+        get_token_account_balance::{GetTokenAccountBalance, GetTokenAccountBalanceConfig},
     },
     rpc_call::RpcCall,
     types::CommitmentLevel,
@@ -68,6 +69,26 @@ impl RpcClient {
                 config: GetSlotConfig {
                     commitment: CommitmentLevel::Finalized,
                     min_context_slot: None,
+                },
+            },
+            client: &self.client,
+            rpc_url: &self.rpc_url,
+        }
+    }
+
+    /// Returns the token balance of an SPL Token account.
+    ///
+    /// https://solana.com/docs/rpc/http/gettokenaccountbalance
+    pub fn get_token_account_balance(
+        &'_ self,
+        pubkey: String,
+    ) -> RpcCall<'_, GetTokenAccountBalance> {
+        RpcCall {
+            id: 1,
+            method: GetTokenAccountBalance {
+                pubkey,
+                config: GetTokenAccountBalanceConfig {
+                    commitment: CommitmentLevel::Finalized,
                 },
             },
             client: &self.client,
