@@ -11,11 +11,11 @@ solana-rpc-lite = { git = "https://github.com/SpriteDay/solana-rpc-lite" }
 ```
 
 ## Usage
-Instantiate the RPC client with RPC URL, call method `params` (where required) and optional `id` via builder pattern:
+Instantiate the RPC client with RPC URL, call method `params` (where required) and optional configuration via builder pattern:
 ```rs
     let client = solana_rpc_lite::RpcClient::new(&rpc_url);
-    let id = 1_u64;
-    let result = client.get_health().with_id(42).await?; // String "ok"
+    let commitment = CommitmentLevel::Confirmed; // Custom configuration, optional
+    let result = client.get_balance(&address).with_commitment(commitment).await?;
 ```
 
 ## Errors
