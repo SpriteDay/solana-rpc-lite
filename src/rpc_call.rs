@@ -1,7 +1,7 @@
 use crate::{
     RpcClientError,
-    methods::RpcMethod,
-    types::{RpcBody, RpcResponse},
+    methods::{RpcMethod, get_balance::GetBalance},
+    types::{CommitmentLevel, RpcBody, RpcResponse},
 };
 use std::pin::Pin;
 
@@ -42,6 +42,18 @@ impl<'a, T: RpcMethod> RpcCall<'a, T> {
 
     pub fn with_id(mut self, id: u64) -> Self {
         self.id = id;
+        self
+    }
+}
+
+impl<'a> RpcCall<'a, GetBalance> {
+    pub fn with_commitment(mut self, commitment: CommitmentLevel) -> Self {
+        self.method.config.commitment = commitment;
+        self
+    }
+
+    pub fn with_min_context_slot(mut self, slot: u64) -> Self {
+        self.method.config.min_context_slot = Some(slot);
         self
     }
 }

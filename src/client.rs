@@ -1,4 +1,11 @@
-use crate::{methods::get_health::GetHealth, rpc_call::RpcCall};
+use crate::{
+    methods::{
+        get_balance::{GetBalance, GetBalanceConfig},
+        get_health::GetHealth,
+    },
+    rpc_call::RpcCall,
+    types::CommitmentLevel,
+};
 
 pub struct RpcClient {
     rpc_url: String,
@@ -27,6 +34,21 @@ impl RpcClient {
         RpcCall {
             id: 1,
             method: GetHealth,
+            client: &self.client,
+            rpc_url: &self.rpc_url,
+        }
+    }
+
+    pub fn get_balance(&'_ self, pubkey: String) -> RpcCall<'_, GetBalance> {
+        RpcCall {
+            id: 1,
+            method: GetBalance {
+                pubkey,
+                config: GetBalanceConfig {
+                    commitment: CommitmentLevel::Finalized,
+                    min_context_slot: None,
+                },
+            },
             client: &self.client,
             rpc_url: &self.rpc_url,
         }

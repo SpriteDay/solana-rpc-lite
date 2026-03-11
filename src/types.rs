@@ -118,6 +118,14 @@ pub enum RpcClientError {
     Json(#[from] serde_json::Error),
 }
 
+#[derive(Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum CommitmentLevel {
+    Finalized,
+    Confirmed,
+    Processed,
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

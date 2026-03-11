@@ -1,5 +1,6 @@
 use serde::de::DeserializeOwned;
 
+pub mod get_balance;
 pub mod get_health;
 
 pub trait RpcMethod {
