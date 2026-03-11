@@ -31,6 +31,7 @@ Errors are returned via `RpcClientError`, it has 6 variants:
 For now impletented these methods:
 - [getHealth](https://solana.com/docs/rpc/http/gethealth)
 - [getbalance](https://solana.com/docs/rpc/http/getbalance)
+- [getSlot](https://solana.com/docs/rpc/http/getslot)
 
 
 ## Tests
